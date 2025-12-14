@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Xếp Hình Ảnh</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 40px;
+    }
+    h1 { margin-bottom: 10px; }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+    }
+
+    .tile {
+      width: 100px;
+      height: 100px;
+      background-image: url('https://picsum.photos/300');
+      background-size: 300px 300px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .empty {
+      background: #ccc;
+      cursor: default;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Game Xếp Hình Ảnh 3x3</h1>
+<p>Sắp xếp ảnh về đúng vị trí ban đầu</p>
+
+<div id="board"></div>
+<button onclick="shuffle()">Trộn hình</button>
+
+<script>
+  const board = document.getElementById('board');
+
+  // 0..7 là mảnh ảnh, 8 là ô trống
+  let tiles = [0,1,2,3,4,5,6,7,null];
+
+  function render() {
+    board.innerHTML = '';
+    tiles.forEach((value, index) => {
+      const div = document.createElement('div');
+
+      if (value === null) {
+        div.className = 'tile empty';
+      } else {
+        div.className = 'tile';
+        const x = (value % 3) * -100;
+        const y = Math.floor(value / 3) * -100;
+        div.style.backgroundPosition = `${x}px ${y}px`;
+        div.onclick = () => move(index);
+      }
+
+      board.appendChild(div);
+    });
+  }
+
+  function move(index) {
+    const emptyIndex = tiles.indexOf(null);
+    const canMove =
+      index === emptyIndex - 1 ||
+      index === emptyIndex + 1 ||
+      index === emptyIndex - 3 ||
+      index === emptyIndex + 3;
+
+    if (canMove) {
+      [tiles[index], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[index]];
+      render();
+      checkWin();
+    }
+  }
+
+  function shuffle() {
+    tiles.sort(() => Math.random() - 0.5);
+    render();
+  }
+
+  function checkWin() {
+    const win = [0,1,2,3,4,5,6,7,null];
+    if (tiles.every((v, i) => v === win[i])) {
+      setTimeout(() => alert('🎉 Bạn đã hoàn thành bức ảnh!'), 100);
+    }
+  }
+
+  render();
+</script>
+
+</body>
+</html>
